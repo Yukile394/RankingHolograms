@@ -1,9 +1,11 @@
 package com.silvera.rankingholograms;
 
 import com.silvera.rankingholograms.commands.HologramSetupCommand;
+import com.silvera.rankingholograms.commands.NpcHologramFreezeCommand;
 import com.silvera.rankingholograms.commands.NpcSelectCommand;
 import com.silvera.rankingholograms.commands.RankHologramCommand;
 import com.silvera.rankingholograms.commands.SetupTabCompleter;
+import com.silvera.rankingholograms.commands.Top3HologramCommand;
 import com.silvera.rankingholograms.config.ConfigManager;
 import com.silvera.rankingholograms.data.LeaderboardCategory;
 import com.silvera.rankingholograms.db.DatabaseManager;
@@ -79,6 +81,7 @@ public class RankingHologramsPlugin extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("npcselect").setExecutor(new NpcSelectCommand(this));
+        getCommand("npchologramdurdur").setExecutor(new NpcHologramFreezeCommand(this));
 
         registerRankCommand("killsiralama1", LeaderboardCategory.KILL, 1);
         registerRankCommand("killsiralama2", LeaderboardCategory.KILL, 2);
@@ -96,6 +99,11 @@ public class RankingHologramsPlugin extends JavaPlugin {
         registerRankCommand("klansiralama2", LeaderboardCategory.CLAN, 2);
         registerRankCommand("klansiralama3", LeaderboardCategory.CLAN, 3);
 
+        registerTop3Command("killsiralamatop3", LeaderboardCategory.KILL);
+        registerTop3Command("zamansiralamatop3", LeaderboardCategory.TIME);
+        registerTop3Command("olumsiralamatop3", LeaderboardCategory.DEATH);
+        registerTop3Command("klansiralamatop3", LeaderboardCategory.CLAN);
+
         HologramSetupCommand setupCommand = new HologramSetupCommand(this);
         getCommand("siralama").setExecutor(setupCommand);
         getCommand("siralama").setTabCompleter(new SetupTabCompleter());
@@ -103,6 +111,10 @@ public class RankingHologramsPlugin extends JavaPlugin {
 
     private void registerRankCommand(String name, LeaderboardCategory category, int rank) {
         getCommand(name).setExecutor(new RankHologramCommand(this, category, rank));
+    }
+
+    private void registerTop3Command(String name, LeaderboardCategory category) {
+        getCommand(name).setExecutor(new Top3HologramCommand(this, category));
     }
 
     private void registerListeners() {

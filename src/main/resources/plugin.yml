@@ -11,6 +11,10 @@ commands:
     description: Yakindaki bir Citizens NPC'sini secili hale getirir (RankingHolograms takibi icin).
     permission: rankhologram.create
 
+  npchologramdurdur:
+    description: Secili NPC'nin hologramini/donusunu baktigin yone kilitler, tekrar yazinca acar.
+    permission: rankhologram.create
+
   killsiralama1:
     description: Kill siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
     aliases: [killsıralama1]
@@ -61,6 +65,23 @@ commands:
   klansiralama3:
     description: Klan siralamasinda 3. siradaki klani secili NPC'ye hologram olarak baglar.
     aliases: [klansıralama3]
+    permission: rankhologram.create
+
+  killsiralamatop3:
+    description: Kill siralamasinda ilk 3 kisi + toplam kill'i secili NPC'ye tek hologram olarak baglar.
+    aliases: [killsıralamatop3]
+    permission: rankhologram.create
+  zamansiralamatop3:
+    description: Zaman siralamasinda ilk 3 kisi + toplami secili NPC'ye tek hologram olarak baglar.
+    aliases: [zamansıralamatop3]
+    permission: rankhologram.create
+  olumsiralamatop3:
+    description: Olum siralamasinda ilk 3 kisi + toplami secili NPC'ye tek hologram olarak baglar.
+    aliases: [ölümsıralamatop3]
+    permission: rankhologram.create
+  klansiralamatop3:
+    description: Klan siralamasinda ilk 3 klan + toplam kill'i secili NPC'ye tek hologram olarak baglar.
+    aliases: [klansıralamatop3]
     permission: rankhologram.create
 
   siralama:
