@@ -1,0 +1,43 @@
+name: RankingHolograms
+version: '${version}'
+main: com.silvera.rankingholograms.RankingHologramsPlugin
+api-version: '1.21'
+description: Modern Display Entity based ranking holograms with SimpleClans integration.
+author: YukileX
+depend: [SimpleClans]
+
+commands:
+  killsiralama:
+    description: Kill siralamasi hologrami olustur.
+    aliases: [killsıralama]
+    permission: rankhologram.create
+  olumsiralama:
+    description: Olum siralamasi hologrami olustur.
+    aliases: [ölümsıralama]
+    permission: rankhologram.create
+  zamansiralama:
+    description: Zaman siralamasi hologrami olustur.
+    aliases: [zamansıralama]
+    permission: rankhologram.create
+  klansiralama:
+    description: Klan kill siralamasi hologrami olustur.
+    aliases: [klansıralama]
+    permission: rankhologram.create
+  siralama:
+    description: Siralama hologram ayar menusu.
+    aliases: [sıralamahologramayarla]
+    permission: rankhologram.admin
+
+permissions:
+  rankhologram.admin:
+    description: Tum admin komutlarina erisim.
+    default: op
+  rankhologram.create:
+    description: Hologram olusturma yetkisi.
+    default: op
+  rankhologram.remove:
+    description: Hologram silme yetkisi.
+    default: op
+  rankhologram.reload:
+    description: Plugin reload yetkisi.
+    default: op

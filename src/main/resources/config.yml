@@ -1,0 +1,53 @@
+# RankingHolograms configuration
+
+settings:
+  leaderboard-size: 10
+
+hologram:
+  update-interval: 5
+  view-distance: 32
+  shadow: false
+  background: false
+  line-spacing: 0.28
+  billboard: CENTER
+
+weekly:
+  enabled: true
+  reset-day: MONDAY
+  reset-hour: 0
+  reset-minute: 0
+
+time:
+  show-seconds: false
+
+database:
+  type: sqlite
+  file: data.db
+
+colors:
+  title: "<gradient:#00C6FF:#0072FF>"
+  first: "<gold>"
+  second: "<gray>"
+  third: "<#CD7F32>"
+  normal: "<white>"
+  value: "<yellow>"
+  subtitle: "<#7F8C9A>"
+
+messages:
+  hologram-titles:
+    KILL: "KILL SIRALAMASI"
+    DEATH: "OLUM SIRALAMASI"
+    TIME: "ZAMAN SIRALAMASI"
+    CLAN_KILL: "KLAN SIRALAMASI"
+    CLAN_DEATH: "KLAN OLUM SIRALAMASI"
+    WEEKLY_KILL: "HAFTALIK KILL SIRALAMASI"
+    WEEKLY_DEATH: "HAFTALIK OLUM SIRALAMASI"
+  kill-suffix: "Kill"
+  death-suffix: "Olum"
+  no-permission: "<red>Bu komutu kullanma yetkiniz yok."
+  hologram-created: "<green>Hologram olusturuldu."
+  hologram-removed: "<green>Hologram silindi."
+  hologram-not-found: "<red>Hologram bulunamadi."
+  simpleclans-missing: "<red>SimpleClans bulunamadi, klan siralamalari devre disi."
+  empty-leaderboard: "Henuz veri yok"
+  reload-success: "<green>Config yeniden yuklendi."
