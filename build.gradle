@@ -49,9 +49,6 @@ processResources {
 
 shadowJar {
     archiveClassifier.set('')
-    relocate 'org.sqlite', 'com.silvera.rankingholograms.libs.sqlite'
-    relocate 'com.zaxxer.hikari', 'com.silvera.rankingholograms.libs.hikari'
-    minimize()
 }
 
 build {
