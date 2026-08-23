@@ -7,6 +7,7 @@ import com.silvera.rankingholograms.data.PlayerStats;
 import com.silvera.rankingholograms.data.RankBinding;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.npc.NPC.Metadata;
 import net.citizensnpcs.api.npc.NPCRegistry;
 import net.citizensnpcs.trait.HologramTrait;
 
@@ -90,12 +91,14 @@ public class HologramManager {
     }
 
     private void clearHologram(NPC npc) {
+        // Give the NPC its plain nameplate back, regardless of whether a
+        // HologramTrait line is still attached.
+        npc.data().setPersistent(Metadata.NAMEPLATE_VISIBLE, true);
+        npc.setAlwaysUseNameHologram(false);
         if (!npc.hasTrait(HologramTrait.class)) {
             return;
         }
-        HologramTrait trait = npc.getOrAddTrait(HologramTrait.class);
-        trait.clear();
-        npc.setAlwaysUseNameHologram(false);
+        npc.getOrAddTrait(HologramTrait.class).clear();
     }
 
     /**
@@ -106,14 +109,22 @@ public class HologramManager {
      * automatically follows the NPC's entity scale (e.g. after
      * "/npc attribute scale 2") since the renderer positions relative to
      * the NPC's live bounding box.
+     *
+     * The NPC's own nameplate (whatever "/npc rename" set it to) is hidden
+     * here, so a bound NPC never needs to be renamed by hand and its plain
+     * name never renders underneath/behind our lines (that double text is
+     * what was causing the lines to visually "stick together"). The rank
+     * line is added last so it ends up on top, matching the reference
+     * screenshot; the description line sits just below it.
      */
     private void renderHologram(NPC npc, RankLine line) {
+        npc.data().setPersistent(Metadata.NAMEPLATE_VISIBLE, false);
         npc.setAlwaysUseNameHologram(true);
         HologramTrait trait = npc.getOrAddTrait(HologramTrait.class);
         trait.clear();
         trait.setLineHeight(plugin.configManager().baseLineHeight());
-        trait.addLine(nameLineMiniMessage(line));
         trait.addLine(descriptionLineMiniMessage(line));
+        trait.addLine(nameLineMiniMessage(line));
     }
 
     private String nameLineMiniMessage(RankLine line) {
@@ -131,11 +142,13 @@ public class HologramManager {
         int index = rank - 1;
         String subject;
         boolean hasData;
+        long value = 0;
 
         if (category == LeaderboardCategory.CLAN) {
             List<ClanStats> top = plugin.databaseManager().topClans(3);
             hasData = index < top.size();
             subject = hasData ? top.get(index).getClanName() : null;
+            value = hasData ? top.get(index).getTotalKills() : 0;
         } else {
             String column = switch (category) {
                 case KILL -> "total_kills";
@@ -145,7 +158,17 @@ public class HologramManager {
             };
             List<PlayerStats> top = plugin.databaseManager().topPlayers(column, 3);
             hasData = index < top.size();
-            subject = hasData ? top.get(index).getName() : null;
+            if (hasData) {
+                PlayerStats stats = top.get(index);
+                subject = stats.getName();
+                value = switch (category) {
+                    case DEATH -> stats.getTotalDeaths();
+                    case TIME -> stats.getTotalOnlineSeconds();
+                    default -> stats.getTotalKills();
+                };
+            } else {
+                subject = null;
+            }
         }
 
         String categoryKey = category.name();
@@ -159,7 +182,21 @@ public class HologramManager {
                 .replace("{name}", subject)
                 .replace("{rank}", String.valueOf(rank));
 
-        return new RankLine(nameLine, descriptionTemplate);
+        String descriptionLine = descriptionTemplate
+                .replace("{value}", formatValue(category, value))
+                .replace("{rank}", String.valueOf(rank));
+
+        return new RankLine(nameLine, descriptionLine);
+    }
+
+    /** Formats a raw stat value for display: seconds become "Xs Ydk", everything else stays a plain count. */
+    private String formatValue(LeaderboardCategory category, long value) {
+        if (category != LeaderboardCategory.TIME) {
+            return String.valueOf(value);
+        }
+        long hours = value / 3600;
+        long minutes = (value % 3600) / 60;
+        return hours + "s " + minutes + "dk";
     }
 
     private record RankLine(String nameLine, String descriptionLine) {}
