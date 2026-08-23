@@ -2,9 +2,9 @@ package com.silvera.rankingholograms.db;
 
 import com.silvera.rankingholograms.RankingHologramsPlugin;
 import com.silvera.rankingholograms.data.ClanStats;
-import com.silvera.rankingholograms.data.HologramData;
-import com.silvera.rankingholograms.data.LeaderboardType;
+import com.silvera.rankingholograms.data.LeaderboardCategory;
 import com.silvera.rankingholograms.data.PlayerStats;
+import com.silvera.rankingholograms.data.RankBinding;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -68,9 +68,7 @@ public class DatabaseManager {
                     uuid TEXT PRIMARY KEY,
                     name TEXT NOT NULL,
                     total_kills INTEGER NOT NULL DEFAULT 0,
-                    weekly_kills INTEGER NOT NULL DEFAULT 0,
                     total_deaths INTEGER NOT NULL DEFAULT 0,
-                    weekly_deaths INTEGER NOT NULL DEFAULT 0,
                     total_online_seconds INTEGER NOT NULL DEFAULT 0,
                     last_login INTEGER NOT NULL DEFAULT 0,
                     last_logout INTEGER NOT NULL DEFAULT 0
@@ -81,21 +79,17 @@ public class DatabaseManager {
                 CREATE TABLE IF NOT EXISTS clan_stats (
                     clan_id TEXT PRIMARY KEY,
                     clan_name TEXT NOT NULL,
-                    total_kills INTEGER NOT NULL DEFAULT 0,
-                    weekly_kills INTEGER NOT NULL DEFAULT 0,
-                    total_deaths INTEGER NOT NULL DEFAULT 0,
-                    weekly_deaths INTEGER NOT NULL DEFAULT 0
+                    total_kills INTEGER NOT NULL DEFAULT 0
                 );
             """);
 
+            // One row per NPC that currently has a leaderboard hologram bound to it.
+            // npc_id is the Citizens NPC's stable integer id.
             s.executeUpdate("""
-                CREATE TABLE IF NOT EXISTS holograms (
-                    id TEXT PRIMARY KEY,
-                    type TEXT NOT NULL,
-                    world TEXT NOT NULL,
-                    x REAL NOT NULL,
-                    y REAL NOT NULL,
-                    z REAL NOT NULL
+                CREATE TABLE IF NOT EXISTS rank_bindings (
+                    npc_id INTEGER PRIMARY KEY,
+                    category TEXT NOT NULL,
+                    rank INTEGER NOT NULL
                 );
             """);
 
@@ -118,9 +112,7 @@ public class DatabaseManager {
                 if (rs.next()) {
                     PlayerStats stats = new PlayerStats(uuid, rs.getString("name"));
                     stats.setTotalKills(rs.getLong("total_kills"));
-                    stats.setWeeklyKills(rs.getLong("weekly_kills"));
                     stats.setTotalDeaths(rs.getLong("total_deaths"));
-                    stats.setWeeklyDeaths(rs.getLong("weekly_deaths"));
                     stats.setTotalOnlineSeconds(rs.getLong("total_online_seconds"));
                     stats.setLastLogin(rs.getLong("last_login"));
                     stats.setLastLogout(rs.getLong("last_logout"));
@@ -135,15 +127,12 @@ public class DatabaseManager {
 
     public void savePlayer(PlayerStats stats) {
         String sql = """
-            INSERT INTO player_stats (uuid, name, total_kills, weekly_kills, total_deaths, weekly_deaths,
-                total_online_seconds, last_login, last_logout)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO player_stats (uuid, name, total_kills, total_deaths, total_online_seconds, last_login, last_logout)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(uuid) DO UPDATE SET
                 name = excluded.name,
                 total_kills = excluded.total_kills,
-                weekly_kills = excluded.weekly_kills,
                 total_deaths = excluded.total_deaths,
-                weekly_deaths = excluded.weekly_deaths,
                 total_online_seconds = excluded.total_online_seconds,
                 last_login = excluded.last_login,
                 last_logout = excluded.last_logout
@@ -152,12 +141,10 @@ public class DatabaseManager {
             ps.setString(1, stats.getUuid().toString());
             ps.setString(2, stats.getName());
             ps.setLong(3, stats.getTotalKills());
-            ps.setLong(4, stats.getWeeklyKills());
-            ps.setLong(5, stats.getTotalDeaths());
-            ps.setLong(6, stats.getWeeklyDeaths());
-            ps.setLong(7, stats.getTotalOnlineSeconds());
-            ps.setLong(8, stats.getLastLogin());
-            ps.setLong(9, stats.getLastLogout());
+            ps.setLong(4, stats.getTotalDeaths());
+            ps.setLong(5, stats.getTotalOnlineSeconds());
+            ps.setLong(6, stats.getLastLogin());
+            ps.setLong(7, stats.getLastLogout());
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Oyuncu verisi kaydedilemedi: " + e.getMessage(), e);
@@ -173,9 +160,7 @@ public class DatabaseManager {
                 while (rs.next()) {
                     PlayerStats stats = new PlayerStats(UUID.fromString(rs.getString("uuid")), rs.getString("name"));
                     stats.setTotalKills(rs.getLong("total_kills"));
-                    stats.setWeeklyKills(rs.getLong("weekly_kills"));
                     stats.setTotalDeaths(rs.getLong("total_deaths"));
-                    stats.setWeeklyDeaths(rs.getLong("weekly_deaths"));
                     stats.setTotalOnlineSeconds(rs.getLong("total_online_seconds"));
                     list.add(stats);
                 }
@@ -184,14 +169,6 @@ public class DatabaseManager {
             plugin.getLogger().log(Level.WARNING, "Siralama sorgusu basarisiz: " + e.getMessage(), e);
         }
         return list;
-    }
-
-    public void resetWeeklyPlayers() {
-        try (Connection c = dataSource.getConnection(); Statement s = c.createStatement()) {
-            s.executeUpdate("UPDATE player_stats SET weekly_kills = 0, weekly_deaths = 0");
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Haftalik oyuncu resetleme basarisiz: " + e.getMessage(), e);
-        }
     }
 
     // ---------- clan stats ----------
@@ -204,9 +181,6 @@ public class DatabaseManager {
                 if (rs.next()) {
                     ClanStats stats = new ClanStats(clanId, rs.getString("clan_name"));
                     stats.setTotalKills(rs.getLong("total_kills"));
-                    stats.setWeeklyKills(rs.getLong("weekly_kills"));
-                    stats.setTotalDeaths(rs.getLong("total_deaths"));
-                    stats.setWeeklyDeaths(rs.getLong("weekly_deaths"));
                     return stats;
                 }
             }
@@ -218,30 +192,24 @@ public class DatabaseManager {
 
     public void saveClan(ClanStats stats) {
         String sql = """
-            INSERT INTO clan_stats (clan_id, clan_name, total_kills, weekly_kills, total_deaths, weekly_deaths)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO clan_stats (clan_id, clan_name, total_kills)
+            VALUES (?, ?, ?)
             ON CONFLICT(clan_id) DO UPDATE SET
                 clan_name = excluded.clan_name,
-                total_kills = excluded.total_kills,
-                weekly_kills = excluded.weekly_kills,
-                total_deaths = excluded.total_deaths,
-                weekly_deaths = excluded.weekly_deaths
+                total_kills = excluded.total_kills
         """;
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, stats.getClanId());
             ps.setString(2, stats.getClanName());
             ps.setLong(3, stats.getTotalKills());
-            ps.setLong(4, stats.getWeeklyKills());
-            ps.setLong(5, stats.getTotalDeaths());
-            ps.setLong(6, stats.getWeeklyDeaths());
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Klan verisi kaydedilemedi: " + e.getMessage(), e);
         }
     }
 
-    public List<ClanStats> topClans(String column, int limit) {
-        String sql = "SELECT * FROM clan_stats ORDER BY " + column + " DESC, clan_name ASC LIMIT ?";
+    public List<ClanStats> topClans(int limit) {
+        String sql = "SELECT * FROM clan_stats ORDER BY total_kills DESC, clan_name ASC LIMIT ?";
         List<ClanStats> list = new ArrayList<>();
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, limit);
@@ -249,9 +217,6 @@ public class DatabaseManager {
                 while (rs.next()) {
                     ClanStats stats = new ClanStats(rs.getString("clan_id"), rs.getString("clan_name"));
                     stats.setTotalKills(rs.getLong("total_kills"));
-                    stats.setWeeklyKills(rs.getLong("weekly_kills"));
-                    stats.setTotalDeaths(rs.getLong("total_deaths"));
-                    stats.setWeeklyDeaths(rs.getLong("weekly_deaths"));
                     list.add(stats);
                 }
             }
@@ -261,72 +226,56 @@ public class DatabaseManager {
         return list;
     }
 
-    public void resetWeeklyClans() {
-        try (Connection c = dataSource.getConnection(); Statement s = c.createStatement()) {
-            s.executeUpdate("UPDATE clan_stats SET weekly_kills = 0, weekly_deaths = 0");
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Haftalik klan resetleme basarisiz: " + e.getMessage(), e);
-        }
-    }
+    // ---------- rank bindings (NPC <-> leaderboard rank) ----------
 
-    // ---------- holograms ----------
-
-    public void saveHologram(HologramData data) {
+    public void saveBinding(RankBinding binding) {
         String sql = """
-            INSERT INTO holograms (id, type, world, x, y, z)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET
-                type = excluded.type, world = excluded.world,
-                x = excluded.x, y = excluded.y, z = excluded.z
+            INSERT INTO rank_bindings (npc_id, category, rank)
+            VALUES (?, ?, ?)
+            ON CONFLICT(npc_id) DO UPDATE SET category = excluded.category, rank = excluded.rank
         """;
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, data.getId().toString());
-            ps.setString(2, data.getType().name());
-            ps.setString(3, data.getWorld());
-            ps.setDouble(4, data.getX());
-            ps.setDouble(5, data.getY());
-            ps.setDouble(6, data.getZ());
+            ps.setInt(1, binding.getNpcId());
+            ps.setString(2, binding.getCategory().name());
+            ps.setInt(3, binding.getRank());
             ps.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Hologram kaydedilemedi: " + e.getMessage(), e);
+            plugin.getLogger().log(Level.WARNING, "Hologram baglantisi kaydedilemedi: " + e.getMessage(), e);
         }
     }
 
-    public void deleteHologram(UUID id) {
-        String sql = "DELETE FROM holograms WHERE id = ?";
+    public void deleteBinding(int npcId) {
+        String sql = "DELETE FROM rank_bindings WHERE npc_id = ?";
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, id.toString());
+            ps.setInt(1, npcId);
             ps.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Hologram silinemedi: " + e.getMessage(), e);
+            plugin.getLogger().log(Level.WARNING, "Hologram baglantisi silinemedi: " + e.getMessage(), e);
         }
     }
 
-    public List<HologramData> loadHolograms() {
-        List<HologramData> list = new ArrayList<>();
-        String sql = "SELECT * FROM holograms";
+    public List<RankBinding> loadBindings() {
+        List<RankBinding> list = new ArrayList<>();
+        String sql = "SELECT * FROM rank_bindings";
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    UUID id = UUID.fromString(rs.getString("id"));
-                    LeaderboardType type = LeaderboardType.valueOf(rs.getString("type"));
-                    String world = rs.getString("world");
-                    double x = rs.getDouble("x");
-                    double y = rs.getDouble("y");
-                    double z = rs.getDouble("z");
-                    list.add(new HologramData(id, type, world, x, y, z));
+                    int npcId = rs.getInt("npc_id");
+                    LeaderboardCategory category = LeaderboardCategory.valueOf(rs.getString("category"));
+                    int rank = rs.getInt("rank");
+                    list.add(new RankBinding(npcId, category, rank));
                 } catch (IllegalArgumentException ex) {
-                    plugin.getLogger().warning("Bozuk hologram kaydi atlandi: " + ex.getMessage());
+                    plugin.getLogger().warning("Bozuk hologram baglantisi atlandi: " + ex.getMessage());
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Hologramlar yuklenemedi: " + e.getMessage(), e);
+            plugin.getLogger().log(Level.WARNING, "Hologram baglantilari yuklenemedi: " + e.getMessage(), e);
         }
         return list;
     }
 
-    // ---------- meta (weekly reset tracking) ----------
+    // ---------- meta ----------
 
     public String getMeta(String key) {
         String sql = "SELECT meta_value FROM plugin_meta WHERE meta_key = ?";

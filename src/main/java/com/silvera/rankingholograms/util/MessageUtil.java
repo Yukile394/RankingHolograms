@@ -21,6 +21,12 @@ public final class MessageUtil {
         return MM.deserialize(colorTag + escapeClose(content));
     }
 
+    /** Wraps a raw hex/color code (e.g. "#A8F0C4") as a MiniMessage color tag if needed. */
+    public static Component colored(String colorOrTag, String content) {
+        String tag = colorOrTag.startsWith("<") ? colorOrTag : "<" + colorOrTag + ">";
+        return parse(tag, content);
+    }
+
     private static String escapeClose(String content) {
         // Plain content is safe to inline since we never accept raw user MiniMessage tags here.
         return content;

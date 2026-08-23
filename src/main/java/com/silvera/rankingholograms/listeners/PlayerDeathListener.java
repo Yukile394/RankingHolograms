@@ -37,7 +37,6 @@ public class PlayerDeathListener implements Listener {
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> processedDeathEvents.remove(marker), 5L);
 
         plugin.statsManager().registerDeath(victim.getUniqueId());
-        plugin.clanIntegration().registerClanDeath(victim.getUniqueId());
 
         Player killer = victim.getKiller();
         if (killer == null || killer.getUniqueId().equals(victim.getUniqueId())) {

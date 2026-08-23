@@ -11,9 +11,7 @@ public class PlayerStats {
     private final UUID uuid;
     private String name;
     private long totalKills;
-    private long weeklyKills;
     private long totalDeaths;
-    private long weeklyDeaths;
     private long totalOnlineSeconds;
     private long lastLogin;
     private long lastLogout;
@@ -43,28 +41,12 @@ public class PlayerStats {
         this.totalKills = totalKills;
     }
 
-    public long getWeeklyKills() {
-        return weeklyKills;
-    }
-
-    public void setWeeklyKills(long weeklyKills) {
-        this.weeklyKills = weeklyKills;
-    }
-
     public long getTotalDeaths() {
         return totalDeaths;
     }
 
     public void setTotalDeaths(long totalDeaths) {
         this.totalDeaths = totalDeaths;
-    }
-
-    public long getWeeklyDeaths() {
-        return weeklyDeaths;
-    }
-
-    public void setWeeklyDeaths(long weeklyDeaths) {
-        this.weeklyDeaths = weeklyDeaths;
     }
 
     public long getTotalOnlineSeconds() {
@@ -93,11 +75,9 @@ public class PlayerStats {
 
     public void addKill() {
         totalKills++;
-        weeklyKills++;
     }
 
     public void addDeath() {
         totalDeaths++;
-        weeklyDeaths++;
     }
 }

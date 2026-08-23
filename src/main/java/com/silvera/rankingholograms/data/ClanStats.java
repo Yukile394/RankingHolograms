@@ -1,7 +1,7 @@
 package com.silvera.rankingholograms.data;
 
 /**
- * Aggregated kill/death totals for a SimpleClans clan. clanId corresponds to
+ * Aggregated kill totals for a SimpleClans clan. clanId corresponds to
  * SimpleClans' internal clan tag, which is unique and stable.
  */
 public class ClanStats {
@@ -9,9 +9,6 @@ public class ClanStats {
     private final String clanId;
     private String clanName;
     private long totalKills;
-    private long weeklyKills;
-    private long totalDeaths;
-    private long weeklyDeaths;
 
     public ClanStats(String clanId, String clanName) {
         this.clanId = clanId;
@@ -38,37 +35,7 @@ public class ClanStats {
         this.totalKills = totalKills;
     }
 
-    public long getWeeklyKills() {
-        return weeklyKills;
-    }
-
-    public void setWeeklyKills(long weeklyKills) {
-        this.weeklyKills = weeklyKills;
-    }
-
-    public long getTotalDeaths() {
-        return totalDeaths;
-    }
-
-    public void setTotalDeaths(long totalDeaths) {
-        this.totalDeaths = totalDeaths;
-    }
-
-    public long getWeeklyDeaths() {
-        return weeklyDeaths;
-    }
-
-    public void setWeeklyDeaths(long weeklyDeaths) {
-        this.weeklyDeaths = weeklyDeaths;
-    }
-
     public void addKill() {
         totalKills++;
-        weeklyKills++;
-    }
-
-    public void addDeath() {
-        totalDeaths++;
-        weeklyDeaths++;
     }
 }

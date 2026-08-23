@@ -1,53 +1,48 @@
 # RankingHolograms configuration
 
-settings:
-  leaderboard-size: 10
-
 hologram:
   update-interval: 5
-  view-distance: 32
-  shadow: false
-  background: false
-  line-spacing: 0.28
-  billboard: CENTER
-
-weekly:
-  enabled: true
-  reset-day: MONDAY
-  reset-hour: 0
-  reset-minute: 0
-
-time:
-  show-seconds: false
+  # NPC boyutu (/npc attribute scale) degistiginde hologram da orantili buyur/kucul.
+  base-line-height: 0.26
 
 database:
   type: sqlite
   file: data.db
 
 colors:
-  title: "<gradient:#00C6FF:#0072FF>"
-  first: "<gold>"
-  second: "<gray>"
-  third: "<#CD7F32>"
-  normal: "<white>"
-  value: "<yellow>"
-  subtitle: "<#7F8C9A>"
+  # Ilk satir (isim + rank) rengi.
+  name: "#A8F0C4"
+  # Ikinci satir (aciklama) rengi.
+  description: "#D3DCE0"
 
 messages:
-  hologram-titles:
-    KILL: "KILL SIRALAMASI"
-    DEATH: "OLUM SIRALAMASI"
-    TIME: "ZAMAN SIRALAMASI"
-    CLAN_KILL: "KLAN SIRALAMASI"
-    CLAN_DEATH: "KLAN OLUM SIRALAMASI"
-    WEEKLY_KILL: "HAFTALIK KILL SIRALAMASI"
-    WEEKLY_DEATH: "HAFTALIK OLUM SIRALAMASI"
-  kill-suffix: "Kill"
-  death-suffix: "Olum"
+  # {rank} = 1/2/3, {name} = oyuncu/klan ismi. Aciklama satirlari her kategori icin ayri.
+  name-line: "{name} (#{rank}"
+  description:
+    KILL:
+      1: "En cok oldurmeye sahip kisi"
+      2: "En cok oldurmeye sahip 2 kisi"
+      3: "En cok oldurmeye sahip #3 Kisi"
+    DEATH:
+      1: "En cok olen kisi"
+      2: "En cok olen 2 kisi"
+      3: "En cok olen #3 Kisi"
+    TIME:
+      1: "En cok oyunda vakit gecirin kisi"
+      2: "En cok oyunda vakit gecirin 2 kisi"
+      3: "En cok oyunda vakit gecirin #3 Kisi"
+    CLAN:
+      1: "En cok oldurmeye sahip klan"
+      2: "En cok oldurmeye sahip 2 klan"
+      3: "En cok oldurmeye sahip #3 klan"
   no-permission: "<red>Bu komutu kullanma yetkiniz yok."
-  hologram-created: "<green>Hologram olusturuldu."
-  hologram-removed: "<green>Hologram silindi."
-  hologram-not-found: "<red>Hologram bulunamadi."
-  simpleclans-missing: "<red>SimpleClans bulunamadi, klan siralamalari devre disi."
-  empty-leaderboard: "Henuz veri yok"
+  npc-not-selected: "<red>Once /npc select ile bir NPC secmelisin."
+  npc-selected: "<green>NPC secildi: {name}"
+  no-nearby-npc: "<red>Yakinda secilebilecek bir Citizens NPC'si bulunamadi."
+  hologram-linked: "<green>Hologram secili NPC'ye baglandi."
+  hologram-unlinked: "<green>Hologram baglantisi kaldirildi."
+  hologram-not-found: "<red>Bu NPC'de kayitli bir hologram baglantisi yok."
+  citizens-missing: "<red>Citizens bulunamadi, plugin devre disi."
+  simpleclans-missing: "<red>SimpleClans bulunamadi, plugin devre disi."
+  empty-leaderboard: "<red>Bu sirada henuz yeterli veri yok."
   reload-success: "<green>Config yeniden yuklendi."

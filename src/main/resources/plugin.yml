@@ -2,29 +2,69 @@ name: RankingHolograms
 version: '${version}'
 main: com.silvera.rankingholograms.RankingHologramsPlugin
 api-version: '1.21'
-description: Modern Display Entity based ranking holograms with SimpleClans integration.
+description: Citizens NPC tabanli siralama hologramlari, SimpleClans entegrasyonlu.
 author: YukileX
-depend: [SimpleClans]
+depend: [SimpleClans, Citizens]
 
 commands:
-  killsiralama:
-    description: Kill siralamasi hologrami olustur.
-    aliases: [killsıralama]
+  npcselect:
+    description: Yakindaki bir Citizens NPC'sini secili hale getirir (RankingHolograms takibi icin).
     permission: rankhologram.create
-  olumsiralama:
-    description: Olum siralamasi hologrami olustur.
-    aliases: [ölümsıralama]
+
+  killsiralama1:
+    description: Kill siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [killsıralama1]
     permission: rankhologram.create
-  zamansiralama:
-    description: Zaman siralamasi hologrami olustur.
-    aliases: [zamansıralama]
+  killsiralama2:
+    description: Kill siralamasinda 2. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [killsıralama2]
     permission: rankhologram.create
-  klansiralama:
-    description: Klan kill siralamasi hologrami olustur.
-    aliases: [klansıralama]
+  killsiralama3:
+    description: Kill siralamasinda 3. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [killsıralama3]
     permission: rankhologram.create
+
+  zamansiralama1:
+    description: Zaman siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [zamansıralama1]
+    permission: rankhologram.create
+  zamansiralama2:
+    description: Zaman siralamasinda 2. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [zamansıralama2]
+    permission: rankhologram.create
+  zamansiralama3:
+    description: Zaman siralamasinda 3. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [zamansıralama3]
+    permission: rankhologram.create
+
+  olumsiralama1:
+    description: Olum siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [ölümsıralama1]
+    permission: rankhologram.create
+  olumsiralama2:
+    description: Olum siralamasinda 2. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [ölümsıralama2]
+    permission: rankhologram.create
+  olumsiralama3:
+    description: Olum siralamasinda 3. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    aliases: [ölümsıralama3]
+    permission: rankhologram.create
+
+  klansiralama1:
+    description: Klan siralamasinda 1. siradaki klani secili NPC'ye hologram olarak baglar.
+    aliases: [klansıralama1]
+    permission: rankhologram.create
+  klansiralama2:
+    description: Klan siralamasinda 2. siradaki klani secili NPC'ye hologram olarak baglar.
+    aliases: [klansıralama2]
+    permission: rankhologram.create
+  klansiralama3:
+    description: Klan siralamasinda 3. siradaki klani secili NPC'ye hologram olarak baglar.
+    aliases: [klansıralama3]
+    permission: rankhologram.create
+
   siralama:
-    description: Siralama hologram ayar menusu.
+    description: Siralama hologram yonetim menusu (baglantiyi kaldirma, reload).
     aliases: [sıralamahologramayarla]
     permission: rankhologram.admin
 
@@ -33,10 +73,10 @@ permissions:
     description: Tum admin komutlarina erisim.
     default: op
   rankhologram.create:
-    description: Hologram olusturma yetkisi.
+    description: NPC secme ve hologram baglama yetkisi.
     default: op
   rankhologram.remove:
-    description: Hologram silme yetkisi.
+    description: Hologram baglantisini kaldirma yetkisi.
     default: op
   rankhologram.reload:
     description: Plugin reload yetkisi.

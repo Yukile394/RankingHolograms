@@ -17,6 +17,7 @@ repositories {
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
     maven { url = 'https://repo.roinujnosde.me/releases/' } // Actively maintained SimpleClans fork (RoinujNosde)
+    maven { url = 'https://maven.citizensnpcs.co/repo' }
 }
 
 dependencies {
@@ -26,6 +27,12 @@ dependencies {
     // Check https://repo.roinujnosde.me/releases/net/sacredlabyrinth/phaed/simpleclans/SimpleClans/
     // for the latest version number before building.
     compileOnly 'net.sacredlabyrinth.phaed.simpleclans:SimpleClans:2.19.2'
+
+    // Citizens API (hard dependency at runtime, compileOnly here since it is provided by the server).
+    // Check https://maven.citizensnpcs.co/repo/net/citizensnpcs/citizens-main/ for the latest version.
+    compileOnly('net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT') {
+        exclude group: '*', module: '*'
+    }
 
     // Database driver + connection pool, shaded into the final jar
     implementation 'org.xerial:sqlite-jdbc:3.46.1.3'

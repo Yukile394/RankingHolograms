@@ -62,19 +62,4 @@ public class ClanIntegration {
             plugin.databaseManager().saveClan(stats);
         });
     }
-
-    public void registerClanDeath(UUID victimUuid) {
-        Clan clan = getClan(victimUuid);
-        if (clan == null) {
-            return;
-        }
-        String tag = clan.getTag();
-        String name = clan.getName();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            ClanStats stats = plugin.databaseManager().loadClan(tag, name);
-            stats.setClanName(name);
-            stats.addDeath();
-            plugin.databaseManager().saveClan(stats);
-        });
-    }
 }

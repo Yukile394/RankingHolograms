@@ -68,7 +68,7 @@ public class StatsManager {
 
     /**
      * Flushes live session time for every currently online player without
-     * ending their session; used before server shutdown / weekly resets.
+     * ending their session; used before server shutdown.
      */
     public void flushAllOnline() {
         long now = System.currentTimeMillis();
@@ -78,13 +78,5 @@ public class StatsManager {
             stats.setLastLogin(now);
             plugin.databaseManager().savePlayer(stats);
         }
-    }
-
-    public void resetWeekly() {
-        for (PlayerStats stats : online.values()) {
-            stats.setWeeklyKills(0);
-            stats.setWeeklyDeaths(0);
-        }
-        plugin.databaseManager().resetWeeklyPlayers();
     }
 }

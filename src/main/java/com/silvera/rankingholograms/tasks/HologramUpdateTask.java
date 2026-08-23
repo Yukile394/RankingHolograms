@@ -13,8 +13,8 @@ public class HologramUpdateTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        // Leaderboard values are cached inside HologramManager.refreshAll() calls,
-        // which only touch existing TextDisplay text components (no entity churn).
+        // Leaderboard values are recomputed and repainted onto each bound
+        // NPC's HologramTrait; no entity churn happens here.
         plugin.hologramManager().refreshAll();
     }
 }

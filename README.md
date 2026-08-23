@@ -1,73 +1,96 @@
 # RankingHolograms
 
-Modern Display Entity (TextDisplay) tabanli, SimpleClans entegrasyonlu siralama hologram eklentisi. Paper 1.21.x ve sonrasi icin gelistirilmistir. ArmorStand kullanilmaz.
+Citizens NPC'lerine bagli, SimpleClans entegrasyonlu siralama hologramlari.
+Her hologram bir Citizens NPC'sinin uzerinde, NPC'nin isim (rename) yazisinin
+oldugu yerde gorunur ve NPC'nin `/npc attribute scale` degeriyle birlikte
+buyur/kucur.
 
-## Ozellikler
+## Bagimliliklar
 
-- Kill / Olum / Zaman / Klan Kill / Klan Olum / Haftalik Kill / Haftalik Olum siralamalari
-- Tum leaderboardlar ayni simetrik hologram tasarim sistemini kullanir
-- SQLite tabanli kalicilik (async okuma/yazma), ileride MySQL'e genisletilebilir soyutlama katmani
-- Config uzerinden tamamen ozellestirilebilir renkler (MiniMessage) ve metinler
-- Periyodik, entity yeniden olusturmadan yapilan hologram guncellemeleri (config: `hologram.update-interval`)
-- Otomatik, tek seferlik haftalik reset sistemi (config: `weekly.*`)
-- SimpleClans zorunlu bagimliliktir; sunucuda yoksa plugin yuklenmez
+- [Citizens](https://www.spigotmc.org/resources/citizens.13811/) (hard depend)
+- [SimpleClans](https://www.spigotmc.org/resources/simpleclans.19630/) (hard depend)
 
-## Kurulum
+Ikisi de sunucuda kurulu ve etkin olmadan plugin acilmaz.
 
-1. `SimpleClans` eklentisini sunucunuza kurun.
-2. Bu eklentinin derlenmis jar dosyasini `plugins/` klasorune atin.
-3. Sunucuyu baslatin, `plugins/RankingHolograms/config.yml` dosyasini ihtiyaciniza gore duzenleyin.
-4. `/siralama reload` ile config'i yeniden yukleyebilirsiniz.
+## Nasil calisir
 
-## Komutlar
+1. Citizens'in kendi komutuyla bir NPC olustur:
+   ```
+   /npc create <isim>
+   ```
+2. NPC'nin yanina git ve sec (Citizens'in kendi komutu):
+   ```
+   /npc select
+   ```
+   ya da yakinindaki bir NPC'yi otomatik secmek icin bu pluginin kisayolu:
+   ```
+   /npcselect
+   ```
+3. Secili NPC'ye istedigin siralama + rank'i bagla:
+   ```
+   /killsiralama1   Kill siralamasinda 1. kisi
+   /killsiralama2   Kill siralamasinda 2. kisi
+   /killsiralama3   Kill siralamasinda 3. kisi
 
-| Komut | ASCII | Aciklama | Izin |
-|---|---|---|---|
-| `/killsıralama` | `/killsiralama` | Bulundugunuz konuma kill siralamasi hologrami olusturur | `rankhologram.create` |
-| `/ölümsıralama` | `/olumsiralama` | Olum siralamasi hologrami olusturur | `rankhologram.create` |
-| `/zamansıralama` | `/zamansiralama` | Zaman siralamasi hologrami olusturur | `rankhologram.create` |
-| `/klansıralama` | `/klansiralama` | Klan kill siralamasi hologrami olusturur | `rankhologram.create` |
-| `/sıralamahologramayarla` | `/siralama` | Ana ayar menusu (5 kategori) ve hologram yonetimi | `rankhologram.admin` |
+   /olumsiralama1   Olum siralamasinda 1. kisi
+   /olumsiralama2   Olum siralamasinda 2. kisi
+   /olumsiralama3   Olum siralamasinda 3. kisi
 
-`/siralama` alt komutlari: `oyuncu`, `haftalik`, `zaman`, `klan`, `yonetim`, `create <tur>`, `remove <id>`, `reload`.
+   /zamansiralama1  Zaman siralamasinda 1. kisi
+   /zamansiralama2  Zaman siralamasinda 2. kisi
+   /zamansiralama3  Zaman siralamasinda 3. kisi
 
-Kill veya Olum hologramlarina sag tiklamak (Interaction entity uzerinden) o hologrami toplam ve haftalik gorunum arasinda gecis yaptirir.
+   /klansiralama1   Klan siralamasinda 1. klan
+   /klansiralama2   Klan siralamasinda 2. klan
+   /klansiralama3   Klan siralamasinda 3. klan
+   ```
 
-## Permissionlar
+Her komut, o an secili olan NPC'ye ilgili siralama+rank hologramini baglar.
+Bir NPC'ye ayni anda sadece bir hologram baglanabilir (son komut kazanir).
+Her kategori (kill/zaman/olum/klan) kendi icinde top-3 gosterir; ayri NPC'ler
+kullanarak istedigin kadar hologram olusturabilirsin.
 
-- `rankhologram.admin` - tum admin islemleri (default: op)
-- `rankhologram.create` - hologram olusturma (default: op)
-- `rankhologram.remove` - hologram silme (default: op)
-- `rankhologram.reload` - config reload (default: op)
+Baglantiyi kaldirmak icin secili NPC'de:
+```
+/siralama remove
+```
 
-## Config
+Config'i yeniden yuklemek icin:
+```
+/siralama reload
+```
 
-`config.yml` icinde `settings`, `hologram`, `weekly`, `time`, `database`, `colors` ve `messages` bolumleri bulunur. Tum hologram baslik metinleri, renkler ve mesajlar buradan degistirilebilir.
+## Hologram gorunumu
 
-## Hologram olusturma sistemi
+Iki satir, NPC'nin tam ustunde, ortalanmis:
 
-`/siralama` komutu bulundugunuz her konuma sadece Java kodundan degil, chat uzerindeki tiklanabilir menuden de yeni hologram olusturmaniza izin verir. Her hologram benzersiz bir UUID ile SQLite'a kaydedilir ve sunucu yeniden baslatildiginda otomatik olarak geri yuklenir. Bozuk/gecersiz bir kayit (silinmis dunya, parse edilemeyen tur) atlanir ve loglanir; diger hologramlarin yuklenmesini engellemez.
+```
+<isim> (#<rank>
+<kategoriye ozel aciklama>
+```
 
-## Haftalik reset
+Ornek (kill siralamasi, 1. sira):
+```
+Yukile (#1
+En cok oldurmeye sahip kisi
+```
 
-Varsayilan olarak her Pazartesi 00:00'da sadece haftalik kill/olum sayaclari sifirlanir; toplam degerler ve online sure etkilenmez. Reset zamanini gecen server restartlarinda tekrar tetiklenmemesi icin son reset ISO hafta anahtari veritabaninda saklanir.
+Renkler ve aciklama metinleri `config.yml` -> `colors` / `messages` altindan
+degistirilebilir.
 
-## Gradle build
+## Veri
+
+- Kill/olum/oyun-suresi istatistikleri oyuncu PvP olumlerinden ve
+  giris/cikis sureleri uzerinden otomatik toplanir (SQLite).
+- Klan kill istatistikleri SimpleClans uzerinden otomatik toplanir.
+- NPC <-> hologram baglantilari da ayni veritabaninda saklanir, sunucu
+  yeniden baslatildiginda otomatik geri yuklenir.
+
+## Build
 
 ```
 ./gradlew build
 ```
 
-Cikti: `build/libs/RankingHolograms-<version>.jar`
-
-> Not: Bu repository standart Gradle wrapper script'lerini (`gradlew`, `gradlew.bat`) icerir, fakat `gradle-wrapper.jar` binary dosyasi internet erisimi olmayan bir ortamda uretilemedi. Ilk klonlamadan sonra bir kere `gradle wrapper` komutunu calistirarak (sisteminizde Gradle kuruluysa) bu dosyayi olusturabilir, ya da dogrudan sistem Gradle'inizla `gradle build` calistirabilirsiniz. GitHub Actions workflow'u wrapper jar'ina ihtiyac duymadan `gradle/actions/setup-gradle` uzerinden calisir.
-
-## GitHub Actions
-
-`.github/workflows/build.yml` her push/PR'da Java 21 kurar, Gradle'i (wrapper'a gerek kalmadan) kurar, `gradle build shadowJar` calistirir ve olusan jar dosyasini artifact olarak yukler.
-
-## Paper API notlari
-
-- Hologramlar `TextDisplay` entity'si ile olusturulur, gorunurluk `view-distance` ile sinirlanir.
-- Sag tiklama etkilesimi icin ayrica bir `Interaction` entity spawn edilir (KILL/DEATH/WEEKLY_* turleri icin).
-- Klan siralamalari SimpleClans'in gercek `SimpleClans.getInstance().getClanManager()` API'si uzerinden hesaplanir.
+Citizens ve SimpleClans `compileOnly` bagimlilik olarak eklenmistir; jar'a
+dahil edilmezler, sunucuda ayrica kurulu olmalari gerekir.
