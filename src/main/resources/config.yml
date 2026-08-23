@@ -3,8 +3,8 @@
 hologram:
   update-interval: 5
   # NPC boyutu (/npc attribute scale) degistiginde hologram da orantili buyur/kucul.
-  # 0.26 satirlarin birbirine yapismasina sebep oluyordu, aralik acildi.
-  base-line-height: 0.32
+  # 0.32 hala yetersizdi, satirlar hala yapisiyordu -> 0.45 yapildi.
+  base-line-height: 0.45
 
 database:
   type: sqlite
