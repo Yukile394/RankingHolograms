@@ -3,38 +3,40 @@
 hologram:
   update-interval: 5
   # NPC boyutu (/npc attribute scale) degistiginde hologram da orantili buyur/kucul.
-  base-line-height: 0.26
+  # 0.26 satirlarin birbirine yapismasina sebep oluyordu, aralik acildi.
+  base-line-height: 0.32
 
 database:
   type: sqlite
   file: data.db
 
 colors:
-  # Ilk satir (isim + rank) rengi.
-  name: "#A8F0C4"
-  # Ikinci satir (aciklama) rengi.
-  description: "#D3DCE0"
+  # Ust satir (isim + rank) rengi.
+  name: "#7CFFB2"
+  # Alt satir (aciklama) rengi. Gri yerine altin/sari tonu kullanildi.
+  description: "#FFD966"
 
 messages:
-  # {rank} = 1/2/3, {name} = oyuncu/klan ismi. Aciklama satirlari her kategori icin ayri.
-  name-line: "{name} (#{rank}"
+  # {rank} = 1/2/3, {name} = oyuncu/klan ismi. {value} = o kategorideki toplam sayi/sure.
+  # Aciklama satirlari her kategori icin ayri.
+  name-line: "{name} (#{rank})"
   description:
     KILL:
-      1: "En cok oldurmeye sahip kisi"
-      2: "En cok oldurmeye sahip 2 kisi"
-      3: "En cok oldurmeye sahip #3 Kisi"
+      1: "Toplam {value} Kill #1"
+      2: "Toplam {value} Kill #2"
+      3: "Toplam {value} Kill #3"
     DEATH:
-      1: "En cok olen kisi"
-      2: "En cok olen 2 kisi"
-      3: "En cok olen #3 Kisi"
+      1: "Toplam {value} Olum #1"
+      2: "Toplam {value} Olum #2"
+      3: "Toplam {value} Olum #3"
     TIME:
-      1: "En cok oyunda vakit gecirin kisi"
-      2: "En cok oyunda vakit gecirin 2 kisi"
-      3: "En cok oyunda vakit gecirin #3 Kisi"
+      1: "Toplam {value} Oyun Suresi #1"
+      2: "Toplam {value} Oyun Suresi #2"
+      3: "Toplam {value} Oyun Suresi #3"
     CLAN:
-      1: "En cok oldurmeye sahip klan"
-      2: "En cok oldurmeye sahip 2 klan"
-      3: "En cok oldurmeye sahip #3 klan"
+      1: "Toplam {value} Kill #1"
+      2: "Toplam {value} Kill #2"
+      3: "Toplam {value} Kill #3"
   no-permission: "<red>Bu komutu kullanma yetkiniz yok."
   npc-not-selected: "<red>Once /npc select ile bir NPC secmelisin."
   npc-selected: "<green>NPC secildi: {name}"
