@@ -68,6 +68,11 @@ public class ConfigManager {
         return cfg.getString("colors.description", "#D3DCE0");
     }
 
+    /** Tekli sira hologramlarindaki 3. (sayi) satirinin rengi - kucuk/soluk gorunmesi icin varsayilan gri. */
+    public String colorValue() {
+        return cfg.getString("colors.value", "#AAAAAA");
+    }
+
     public String nameLineTemplate() {
         return cfg.getString("messages.name-line", "{name} (#{rank}");
     }
@@ -87,6 +92,16 @@ public class ConfigManager {
     public String top3TotalTemplate(String categoryKey) {
         String path = "messages.top3-total." + categoryKey;
         return cfg.getString(path, "<yellow>Toplam {value} " + categoryKey);
+    }
+
+    /**
+     * Tekli sira hologramlarinin (killsiralama1/2/3 vb.) 3. satirindaki sayi
+     * sablonu. top3-total'dan farkli olarak sabit renk icermez; rengi
+     * colorValue() belirler, boylece "kucuk/soluk" gorunum ayarlanabilir.
+     */
+    public String totalValueTemplate(String categoryKey) {
+        String path = "messages.total-value." + categoryKey;
+        return cfg.getString(path, "Toplam {value}");
     }
 
     public String message(String key) {
