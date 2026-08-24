@@ -28,12 +28,16 @@ public class ConfigManager {
 
     /**
      * Desired packet tracking distance for hologram-bound NPCs, in blocks.
-     * Applied via NPC.Metadata.TRACKING_RANGE so the NPC (and therefore its
-     * HologramTrait) keeps being sent to the client at long range instead of
-     * despawning at the server/Paper default entity-tracking-range.
+     * Applied via NPC.Metadata.TRACKING_RANGE (and HologramTrait#setViewRange)
+     * so the NPC and every one of its hologram lines keep being sent to the
+     * client no matter how far the player walks, instead of despawning at
+     * the server/Paper default entity-tracking-range. Defaults very high
+     * (10000) since the real, unavoidable ceiling is the server's own
+     * view-distance/chunk loading and the player's client render distance,
+     * not this setting - see viewDistance()'s callers for details.
      */
     public int viewDistance() {
-        return Math.max(16, cfg.getInt("hologram.view-distance", 128));
+        return Math.max(16, cfg.getInt("hologram.view-distance", 10000));
     }
 
     /**
