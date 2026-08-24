@@ -1,23 +1,8 @@
-# RankingHolograms configuration
-
 hologram:
   update-interval: 5
-  # NPC boyutu (/npc attribute scale) degistiginde hologram da orantili buyur/kucul.
-  # 0.32 hala yetersizdi, satirlar hala yapisiyordu -> 0.45 yapildi.
   base-line-height: 0.45
-  # Hologramin (NPC'nin) oyuncuya paket olarak gonderilecegi maksimum mesafe (blok).
-  # Bu, Citizens NPC.Metadata.TRACKING_RANGE degerine uygulanir ve sunucunun/Paper'in
-  # varsayilan entity-tracking-range degerinden bagimsiz olarak hologrami uzak
-  # mesafede stabil tutar. Minecraft istemcisinin render/fog mesafesinden daha
-  # yuksek bir deger, oyuncunun render mesafesi kisa oldugunda hala gorunmez olabilir.
-  view-distance: 128
-  # true ise, hologrami tasiyan NPC Citizens'in mesafeye bagli despawn/unspawn
-  # (activation range) davranisindan da muaf tutulur; "her zaman gorunur"e en
-  # yakin karsilik budur.
+  view-distance: 10000
   always-visible: true
-  # Ayni hologramin icerigi (siralama degismedigi surece) art arda kac milisaniyede
-  # bir yeniden paketlenecegi. 1 tick'te bir trait.clear()+addLine() yapmak gereksiz
-  # paket/titreme (goruntu 1 an kaybolup gelme) sorununa yol aciyordu; bu deger onu engeller.
   min-repaint-interval-ms: 250
 
 database:
@@ -25,53 +10,56 @@ database:
   file: data.db
 
 colors:
-  # Ust satir (isim + rank) rengi.
   name: "#7CFFB2"
-  # Alt satir (aciklama) rengi. Gri yerine altin/sari tonu kullanildi.
   description: "#FFD966"
+  value: "#AAAAAA"
 
 messages:
-  # {rank} = 1/2/3, {name} = oyuncu/klan ismi. {value} = o kategorideki toplam sayi/sure.
-  # Aciklama satirlari her kategori icin ayri.
   name-line: "{name} (#{rank})"
+
   description:
     KILL:
-      1: "Toplam {value} Kill #1"
-      2: "Toplam {value} Kill #2"
-      3: "Toplam {value} Kill #3"
+      1: "En Çok Kill Alan Kişi"
+      2: "En Çok Kill Alan 2. Kişi"
+      3: "En Çok Kill Alan 3. Kişi"
     DEATH:
-      1: "Toplam {value} Olum #1"
-      2: "Toplam {value} Olum #2"
-      3: "Toplam {value} Olum #3"
+      1: "En Çok Ölen Kişi"
+      2: "En Çok Ölen 2. Kişi"
+      3: "En Çok Ölen 3. Kişi"
     TIME:
-      1: "Toplam {value} Oyun Suresi #1"
-      2: "Toplam {value} Oyun Suresi #2"
-      3: "Toplam {value} Oyun Suresi #3"
+      1: "En Çok Oynayan Kişi"
+      2: "En Çok Oynayan 2. Kişi"
+      3: "En Çok Oynayan 3. Kişi"
     CLAN:
-      1: "Toplam {value} Kill #1"
-      2: "Toplam {value} Kill #2"
-      3: "Toplam {value} Kill #3"
-  # /killsiralamatop3, /zamansiralamatop3, /olumsiralamatop3, /klansiralamatop3 icin.
-  # Ilk 3 satir bu sablonla (her siradaki kisi/klan icin bir satir), son (4.) satir
-  # top3-total sablonuyla olusturulur. {rank}=1/2/3, {name}=oyuncu/klan ismi, {value}=o kisinin degeri.
+      1: "En Çok Kill Alan Klan"
+      2: "En Çok Kill Alan 2. Klan"
+      3: "En Çok Kill Alan 3. Klan"
+
+  total-value:
+    KILL: "Toplam {value} Kill"
+    DEATH: "Toplam {value} Ölüm"
+    TIME: "Toplam {value} Süre"
+    CLAN: "Toplam {value} Kill"
+
   top3-row: "<gray>#{rank} <white>{name} <gray>- <white>{value}"
-  # Son satir: kategoriye gore toplam. {value} = ilk 3'un toplami.
+
   top3-total:
     KILL: "<yellow>Toplam {value} Kill"
-    DEATH: "<yellow>Toplam {value} Olum"
-    TIME: "<yellow>Toplam {value} Sure"
+    DEATH: "<yellow>Toplam {value} Ölüm"
+    TIME: "<yellow>Toplam {value} Süre"
     CLAN: "<yellow>Toplam {value} Kill"
-  no-permission: "<red>Bu komutu kullanma yetkiniz yok."
-  npc-not-selected: "<red>Once /npc select ile bir NPC secmelisin."
-  npc-selected: "<green>NPC secildi: {name}"
-  no-nearby-npc: "<red>Yakinda secilebilecek bir Citizens NPC'si bulunamadi."
-  hologram-linked: "<green>Hologram secili NPC'ye baglandi."
-  hologram-unlinked: "<green>Hologram baglantisi kaldirildi."
-  hologram-not-found: "<red>Bu NPC'de kayitli bir hologram baglantisi yok."
-  citizens-missing: "<red>Citizens bulunamadi, plugin devre disi."
-  simpleclans-missing: "<red>SimpleClans bulunamadi, plugin devre disi."
-  empty-leaderboard: "<red>Bu sirada henuz yeterli veri yok."
-  reload-success: "<green>Config yeniden yuklendi."
-  hologram-frozen: "<green>NPC hologrami baktigin yone kilitlendi ve durduruldu."
-  hologram-unfrozen: "<green>NPC hologrami tekrar normal sekilde donmeye basladi."
-  hologram-freeze-not-npc: "<red>Once /npc select veya /npcselect ile bir NPC secmelisin."
+
+  no-permission: "<red>Bu komutu kullanma yetkin yok."
+  npc-not-selected: "<red>Önce /npc select ile bir NPC seçmelisin."
+  npc-selected: "<green>NPC seçildi: {name}"
+  no-nearby-npc: "<red>Yakınında seçilebilecek bir Citizens NPC'si bulunamadı."
+  hologram-linked: "<green>Hologram, seçili NPC'ye bağlandı."
+  hologram-unlinked: "<green>Hologram bağlantısı kaldırıldı."
+  hologram-not-found: "<red>Bu NPC'de kayıtlı bir hologram bağlantısı yok."
+  citizens-missing: "<red>Citizens bulunamadı, eklenti devre dışı bırakılıyor."
+  simpleclans-missing: "<red>SimpleClans bulunamadı, eklenti devre dışı bırakılıyor."
+  empty-leaderboard: "<red>Bu sırada henüz yeterli veri yok."
+  reload-success: "<green>Yapılandırma yeniden yüklendi."
+  hologram-frozen: "<green>NPC hologramı baktığın yöne kilitlendi ve durduruldu."
+  hologram-unfrozen: "<green>NPC hologramı tekrar normal şekilde dönmeye başladı."
+  hologram-freeze-not-npc: "<red>Önce /npc select ya da /npcselect ile bir NPC seçmelisin."
