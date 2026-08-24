@@ -2,103 +2,103 @@ name: RankingHolograms
 version: '${version}'
 main: com.silvera.rankingholograms.RankingHologramsPlugin
 api-version: '1.21'
-description: Citizens NPC tabanli siralama hologramlari, SimpleClans entegrasyonlu.
+description: Citizens NPC tabanlı sıralama hologramları, SimpleClans entegrasyonlu.
 author: YukileX
 depend: [SimpleClans, Citizens]
 
 commands:
   npcselect:
-    description: Yakindaki bir Citizens NPC'sini secili hale getirir (RankingHolograms takibi icin).
+    description: Yakınındaki bir Citizens NPC'sini seçili hâle getirir (RankingHolograms takibi için).
     permission: rankhologram.create
 
   npchologramdurdur:
-    description: Secili NPC'nin hologramini/donusunu baktigin yone kilitler, tekrar yazinca acar.
+    description: Seçili NPC'nin hologramını/dönüşünü baktığın yöne kilitler, tekrar yazınca açar.
     permission: rankhologram.create
 
   killsiralama1:
-    description: Kill siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Kill sıralamasında 1. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [killsıralama1]
     permission: rankhologram.create
   killsiralama2:
-    description: Kill siralamasinda 2. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Kill sıralamasında 2. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [killsıralama2]
     permission: rankhologram.create
   killsiralama3:
-    description: Kill siralamasinda 3. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Kill sıralamasında 3. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [killsıralama3]
     permission: rankhologram.create
 
   zamansiralama1:
-    description: Zaman siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Zaman sıralamasında 1. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [zamansıralama1]
     permission: rankhologram.create
   zamansiralama2:
-    description: Zaman siralamasinda 2. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Zaman sıralamasında 2. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [zamansıralama2]
     permission: rankhologram.create
   zamansiralama3:
-    description: Zaman siralamasinda 3. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Zaman sıralamasında 3. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [zamansıralama3]
     permission: rankhologram.create
 
   olumsiralama1:
-    description: Olum siralamasinda 1. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Ölüm sıralamasında 1. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [ölümsıralama1]
     permission: rankhologram.create
   olumsiralama2:
-    description: Olum siralamasinda 2. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Ölüm sıralamasında 2. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [ölümsıralama2]
     permission: rankhologram.create
   olumsiralama3:
-    description: Olum siralamasinda 3. siradaki kisiyi secili NPC'ye hologram olarak baglar.
+    description: Ölüm sıralamasında 3. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
     aliases: [ölümsıralama3]
     permission: rankhologram.create
 
   klansiralama1:
-    description: Klan siralamasinda 1. siradaki klani secili NPC'ye hologram olarak baglar.
+    description: Klan sıralamasında 1. sıradaki klanı seçili NPC'ye hologram olarak bağlar.
     aliases: [klansıralama1]
     permission: rankhologram.create
   klansiralama2:
-    description: Klan siralamasinda 2. siradaki klani secili NPC'ye hologram olarak baglar.
+    description: Klan sıralamasında 2. sıradaki klanı seçili NPC'ye hologram olarak bağlar.
     aliases: [klansıralama2]
     permission: rankhologram.create
   klansiralama3:
-    description: Klan siralamasinda 3. siradaki klani secili NPC'ye hologram olarak baglar.
+    description: Klan sıralamasında 3. sıradaki klanı seçili NPC'ye hologram olarak bağlar.
     aliases: [klansıralama3]
     permission: rankhologram.create
 
   killsiralamatop3:
-    description: Kill siralamasinda ilk 3 kisi + toplam kill'i secili NPC'ye tek hologram olarak baglar.
+    description: Kill sıralamasında ilk 3 kişi + toplam kill'i seçili NPC'ye tek hologram olarak bağlar.
     aliases: [killsıralamatop3]
     permission: rankhologram.create
   zamansiralamatop3:
-    description: Zaman siralamasinda ilk 3 kisi + toplami secili NPC'ye tek hologram olarak baglar.
+    description: Zaman sıralamasında ilk 3 kişi + toplamı seçili NPC'ye tek hologram olarak bağlar.
     aliases: [zamansıralamatop3]
     permission: rankhologram.create
   olumsiralamatop3:
-    description: Olum siralamasinda ilk 3 kisi + toplami secili NPC'ye tek hologram olarak baglar.
+    description: Ölüm sıralamasında ilk 3 kişi + toplamı seçili NPC'ye tek hologram olarak bağlar.
     aliases: [ölümsıralamatop3]
     permission: rankhologram.create
   klansiralamatop3:
-    description: Klan siralamasinda ilk 3 klan + toplam kill'i secili NPC'ye tek hologram olarak baglar.
+    description: Klan sıralamasında ilk 3 klan + toplam kill'i seçili NPC'ye tek hologram olarak bağlar.
     aliases: [klansıralamatop3]
     permission: rankhologram.create
 
   siralama:
-    description: Siralama hologram yonetim menusu (baglantiyi kaldirma, reload).
+    description: Sıralama hologram yönetim menüsü (bağlantıyı kaldırma, yeniden yükleme).
     aliases: [sıralamahologramayarla]
     permission: rankhologram.admin
 
 permissions:
   rankhologram.admin:
-    description: Tum admin komutlarina erisim.
+    description: Tüm admin komutlarına erişim.
     default: op
   rankhologram.create:
-    description: NPC secme ve hologram baglama yetkisi.
+    description: NPC seçme ve hologram bağlama yetkisi.
     default: op
   rankhologram.remove:
-    description: Hologram baglantisini kaldirma yetkisi.
+    description: Hologram bağlantısını kaldırma yetkisi.
     default: op
   rankhologram.reload:
-    description: Plugin reload yetkisi.
+    description: Eklentiyi yeniden yükleme yetkisi.
     default: op
