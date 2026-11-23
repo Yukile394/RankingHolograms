@@ -2,103 +2,20 @@ name: RankingHolograms
 version: '${version}'
 main: com.silvera.rankingholograms.RankingHologramsPlugin
 api-version: '1.21'
-description: Citizens NPC tabanlı sıralama hologramları, SimpleClans entegrasyonlu.
+description: FancyHolograms placeholder'lari ile Top 10 siralama hologramlari, SimpleClans entegrasyonlu.
 author: YukileX
-depend: [SimpleClans, Citizens]
+depend: [SimpleClans, FancyHolograms]
 
 commands:
-  npcselect:
-    description: Yakınındaki bir Citizens NPC'sini seçili hâle getirir (RankingHolograms takibi için).
-    permission: rankhologram.create
-
-  npchologramdurdur:
-    description: Seçili NPC'nin hologramını/dönüşünü baktığın yöne kilitler, tekrar yazınca açar.
-    permission: rankhologram.create
-
-  killsiralama1:
-    description: Kill sıralamasında 1. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [killsıralama1]
-    permission: rankhologram.create
-  killsiralama2:
-    description: Kill sıralamasında 2. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [killsıralama2]
-    permission: rankhologram.create
-  killsiralama3:
-    description: Kill sıralamasında 3. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [killsıralama3]
-    permission: rankhologram.create
-
-  zamansiralama1:
-    description: Zaman sıralamasında 1. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [zamansıralama1]
-    permission: rankhologram.create
-  zamansiralama2:
-    description: Zaman sıralamasında 2. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [zamansıralama2]
-    permission: rankhologram.create
-  zamansiralama3:
-    description: Zaman sıralamasında 3. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [zamansıralama3]
-    permission: rankhologram.create
-
-  olumsiralama1:
-    description: Ölüm sıralamasında 1. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [ölümsıralama1]
-    permission: rankhologram.create
-  olumsiralama2:
-    description: Ölüm sıralamasında 2. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [ölümsıralama2]
-    permission: rankhologram.create
-  olumsiralama3:
-    description: Ölüm sıralamasında 3. sıradaki kişiyi seçili NPC'ye hologram olarak bağlar.
-    aliases: [ölümsıralama3]
-    permission: rankhologram.create
-
-  klansiralama1:
-    description: Klan sıralamasında 1. sıradaki klanı seçili NPC'ye hologram olarak bağlar.
-    aliases: [klansıralama1]
-    permission: rankhologram.create
-  klansiralama2:
-    description: Klan sıralamasında 2. sıradaki klanı seçili NPC'ye hologram olarak bağlar.
-    aliases: [klansıralama2]
-    permission: rankhologram.create
-  klansiralama3:
-    description: Klan sıralamasında 3. sıradaki klanı seçili NPC'ye hologram olarak bağlar.
-    aliases: [klansıralama3]
-    permission: rankhologram.create
-
-  killsiralamatop3:
-    description: Kill sıralamasında ilk 3 kişi + toplam kill'i seçili NPC'ye tek hologram olarak bağlar.
-    aliases: [killsıralamatop3]
-    permission: rankhologram.create
-  zamansiralamatop3:
-    description: Zaman sıralamasında ilk 3 kişi + toplamı seçili NPC'ye tek hologram olarak bağlar.
-    aliases: [zamansıralamatop3]
-    permission: rankhologram.create
-  olumsiralamatop3:
-    description: Ölüm sıralamasında ilk 3 kişi + toplamı seçili NPC'ye tek hologram olarak bağlar.
-    aliases: [ölümsıralamatop3]
-    permission: rankhologram.create
-  klansiralamatop3:
-    description: Klan sıralamasında ilk 3 klan + toplam kill'i seçili NPC'ye tek hologram olarak bağlar.
-    aliases: [klansıralamatop3]
-    permission: rankhologram.create
-
   siralama:
-    description: Sıralama hologram yönetim menüsü (bağlantıyı kaldırma, yeniden yükleme).
+    description: Siralama yonetimi (liste, reload).
     aliases: [sıralamahologramayarla]
     permission: rankhologram.admin
 
 permissions:
   rankhologram.admin:
-    description: Tüm admin komutlarına erişim.
-    default: op
-  rankhologram.create:
-    description: NPC seçme ve hologram bağlama yetkisi.
-    default: op
-  rankhologram.remove:
-    description: Hologram bağlantısını kaldırma yetkisi.
+    description: Tum admin komutlarina erisim.
     default: op
   rankhologram.reload:
-    description: Eklentiyi yeniden yükleme yetkisi.
+    description: Eklentiyi yeniden yukleme yetkisi.
     default: op

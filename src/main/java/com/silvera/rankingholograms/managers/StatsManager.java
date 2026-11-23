@@ -37,11 +37,17 @@ public class StatsManager {
         if (stats == null) {
             return;
         }
-        long now = System.currentTimeMillis();
-        long sessionSeconds = Math.max(0, (now - stats.getLastLogin()) / 1000L);
-        stats.setTotalOnlineSeconds(stats.getTotalOnlineSeconds() + sessionSeconds);
-        stats.setLastLogout(now);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.databaseManager().savePlayer(stats));
+        synchronized (stats) {
+            long now = System.currentTimeMillis();
+            long sessionSeconds = Math.max(0, (now - stats.getLastLogin()) / 1000L);
+            stats.setTotalOnlineSeconds(stats.getTotalOnlineSeconds() + sessionSeconds);
+            stats.setLastLogout(now);
+            stats.setClosed(true);
+        }
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.databaseManager().savePlayer(stats);
+            plugin.leaderboardManager().refreshAndRender();
+        });
     }
 
     public PlayerStats get(UUID uuid) {
@@ -53,8 +59,10 @@ public class StatsManager {
         if (stats == null) {
             return;
         }
-        stats.addKill();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.databaseManager().savePlayer(stats));
+        synchronized (stats) {
+            stats.addKill();
+        }
+        saveAndRefresh(stats);
     }
 
     public void registerDeath(UUID victimUuid) {
@@ -62,21 +70,41 @@ public class StatsManager {
         if (stats == null) {
             return;
         }
-        stats.addDeath();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.databaseManager().savePlayer(stats));
+        synchronized (stats) {
+            stats.addDeath();
+        }
+        saveAndRefresh(stats);
+    }
+
+    private void saveAndRefresh(PlayerStats stats) {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.databaseManager().savePlayer(stats);
+            plugin.leaderboardManager().refreshAndRender();
+        });
     }
 
     /**
-     * Flushes live session time for every currently online player without
-     * ending their session; used before server shutdown.
+     * Adds the live session time of every online player to their totals and
+     * saves it, without ending the session. Safe to call from any thread;
+     * keeps the TIME leaderboard current for players who are still online.
      */
-    public void flushAllOnline() {
+    public void flushOnlineTime() {
         long now = System.currentTimeMillis();
         for (PlayerStats stats : online.values()) {
-            long sessionSeconds = Math.max(0, (now - stats.getLastLogin()) / 1000L);
-            stats.setTotalOnlineSeconds(stats.getTotalOnlineSeconds() + sessionSeconds);
-            stats.setLastLogin(now);
+            synchronized (stats) {
+                if (stats.isClosed()) {
+                    continue;
+                }
+                long sessionSeconds = Math.max(0, (now - stats.getLastLogin()) / 1000L);
+                stats.setTotalOnlineSeconds(stats.getTotalOnlineSeconds() + sessionSeconds);
+                stats.setLastLogin(now);
+            }
             plugin.databaseManager().savePlayer(stats);
         }
+    }
+
+    /** Used before server shutdown. */
+    public void flushAllOnline() {
+        flushOnlineTime();
     }
 }

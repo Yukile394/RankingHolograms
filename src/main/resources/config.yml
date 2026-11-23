@@ -1,65 +1,23 @@
 hologram:
+  # Siralamalarin yenilenme ve hologram satirlarinin guncellenme araligi (saniye).
   update-interval: 5
-  base-line-height: 0.45
-  view-distance: 10000
-  always-visible: true
-  min-repaint-interval-ms: 250
+  # Cevrimici oyuncularin sure verisinin veritabanina yazilma araligi (saniye).
+  time-flush-seconds: 60
 
 database:
   type: sqlite
   file: data.db
 
-colors:
-  name: "#7CFFB2"
-  description: "#FFD966"
-  value: "#AAAAAA"
+placeholders:
+  # Bos siralama pozisyonlarinda gosterilir. &-renk kodlari kullanilabilir.
+  empty-name: "-"      # %killed7% vb.
+  empty-value: "0"     # %killed7_deger% vb.
 
 messages:
-  name-line: "{name} (#{rank})"
-
-  description:
-    KILL:
-      1: "En Çok Kill Alan Kişi"
-      2: "En Çok Kill Alan 2. Kişi"
-      3: "En Çok Kill Alan 3. Kişi"
-    DEATH:
-      1: "En Çok Ölen Kişi"
-      2: "En Çok Ölen 2. Kişi"
-      3: "En Çok Ölen 3. Kişi"
-    TIME:
-      1: "En Çok Oynayan Kişi"
-      2: "En Çok Oynayan 2. Kişi"
-      3: "En Çok Oynayan 3. Kişi"
-    CLAN:
-      1: "En Çok Kill Alan Klan"
-      2: "En Çok Kill Alan 2. Klan"
-      3: "En Çok Kill Alan 3. Klan"
-
-  total-value:
-    KILL: "Toplam {value} Kill"
-    DEATH: "Toplam {value} Ölüm"
-    TIME: "Toplam {value} Süre"
-    CLAN: "Toplam {value} Kill"
-
-  top3-row: "<gray>#{rank} <white>{name} <gray>- <white>{value}"
-
-  top3-total:
-    KILL: "<yellow>Toplam {value} Kill"
-    DEATH: "<yellow>Toplam {value} Ölüm"
-    TIME: "<yellow>Toplam {value} Süre"
-    CLAN: "<yellow>Toplam {value} Kill"
-
   no-permission: "<red>Bu komutu kullanma yetkin yok."
-  npc-not-selected: "<red>Önce /npc select ile bir NPC seçmelisin."
-  npc-selected: "<green>NPC seçildi: {name}"
-  no-nearby-npc: "<red>Yakınında seçilebilecek bir Citizens NPC'si bulunamadı."
-  hologram-linked: "<green>Hologram, seçili NPC'ye bağlandı."
-  hologram-unlinked: "<green>Hologram bağlantısı kaldırıldı."
-  hologram-not-found: "<red>Bu NPC'de kayıtlı bir hologram bağlantısı yok."
-  citizens-missing: "<red>Citizens bulunamadı, eklenti devre dışı bırakılıyor."
-  simpleclans-missing: "<red>SimpleClans bulunamadı, eklenti devre dışı bırakılıyor."
-  empty-leaderboard: "<red>Bu sırada henüz yeterli veri yok."
-  reload-success: "<green>Yapılandırma yeniden yüklendi."
-  hologram-frozen: "<green>NPC hologramı baktığın yöne kilitlendi ve durduruldu."
-  hologram-unfrozen: "<green>NPC hologramı tekrar normal şekilde dönmeye başladı."
-  hologram-freeze-not-npc: "<red>Önce /npc select ya da /npcselect ile bir NPC seçmelisin."
+  empty-leaderboard: "<red>Bu sirada henuz yeterli veri yok."
+  unknown-category: "<red>Kategori: killed, zaman, olum veya klan."
+  reload-success: "<green>Yapilandirma yeniden yuklendi."
+  fancyholograms-missing: "FancyHolograms bulunamadi, eklenti devre disi birakiliyor."
+  fancyholograms-api-error: "FancyHolograms API'si cozumlenemedi, eklenti devre disi birakiliyor."
+  simpleclans-missing: "SimpleClans bulunamadi, eklenti devre disi birakiliyor."

@@ -1,24 +1,19 @@
 package com.silvera.rankingholograms;
 
 import com.silvera.rankingholograms.commands.HologramSetupCommand;
-import com.silvera.rankingholograms.commands.NpcHologramFreezeCommand;
-import com.silvera.rankingholograms.commands.NpcSelectCommand;
-import com.silvera.rankingholograms.commands.RankHologramCommand;
 import com.silvera.rankingholograms.commands.SetupTabCompleter;
-import com.silvera.rankingholograms.commands.Top3HologramCommand;
 import com.silvera.rankingholograms.config.ConfigManager;
-import com.silvera.rankingholograms.data.LeaderboardCategory;
 import com.silvera.rankingholograms.db.DatabaseManager;
-import com.silvera.rankingholograms.listeners.NpcRemoveListener;
+import com.silvera.rankingholograms.hologram.HologramManager;
 import com.silvera.rankingholograms.listeners.PlayerConnectionListener;
 import com.silvera.rankingholograms.listeners.PlayerDeathListener;
 import com.silvera.rankingholograms.managers.ClanIntegration;
-import com.silvera.rankingholograms.managers.HologramManager;
-import com.silvera.rankingholograms.managers.NpcSelectionManager;
+import com.silvera.rankingholograms.managers.LeaderboardManager;
 import com.silvera.rankingholograms.managers.StatsManager;
 import com.silvera.rankingholograms.tasks.HologramUpdateTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class RankingHologramsPlugin extends JavaPlugin {
 
@@ -26,16 +21,17 @@ public class RankingHologramsPlugin extends JavaPlugin {
     private DatabaseManager databaseManager;
     private StatsManager statsManager;
     private ClanIntegration clanIntegration;
+    private LeaderboardManager leaderboardManager;
     private HologramManager hologramManager;
-    private NpcSelectionManager npcSelectionManager;
+    private BukkitTask updateTask;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         this.configManager = new ConfigManager(this);
 
-        if (Bukkit.getPluginManager().getPlugin("Citizens") == null) {
-            getLogger().severe(configManager.message("citizens-missing"));
+        if (Bukkit.getPluginManager().getPlugin("FancyHolograms") == null) {
+            getLogger().severe(configManager.message("fancyholograms-missing"));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -55,21 +51,31 @@ public class RankingHologramsPlugin extends JavaPlugin {
         }
 
         this.statsManager = new StatsManager(this);
+        this.leaderboardManager = new LeaderboardManager(this);
         this.hologramManager = new HologramManager(this);
-        this.npcSelectionManager = new NpcSelectionManager();
+        if (!hologramManager.setup()) {
+            getLogger().severe(configManager.message("fancyholograms-api-error"));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
-        registerCommands();
-        registerListeners();
+        getCommand("siralama").setExecutor(new HologramSetupCommand(this));
+        getCommand("siralama").setTabCompleter(new SetupTabCompleter());
 
-        hologramManager.loadAll();
+        getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
 
-        new HologramUpdateTask(this).runTaskTimer(this, configManager.updateIntervalTicks(), configManager.updateIntervalTicks());
+        startUpdateTask();
 
         getLogger().info("RankingHolograms etkinlestirildi.");
     }
 
     @Override
     public void onDisable() {
+        stopUpdateTask();
+        if (hologramManager != null) {
+            hologramManager.restoreTemplates();
+        }
         if (statsManager != null) {
             statsManager.flushAllOnline();
         }
@@ -79,48 +85,18 @@ public class RankingHologramsPlugin extends JavaPlugin {
         getLogger().info("RankingHolograms devre disi birakildi.");
     }
 
-    private void registerCommands() {
-        getCommand("npcselect").setExecutor(new NpcSelectCommand(this));
-        getCommand("npchologramdurdur").setExecutor(new NpcHologramFreezeCommand(this));
-
-        registerRankCommand("killsiralama1", LeaderboardCategory.KILL, 1);
-        registerRankCommand("killsiralama2", LeaderboardCategory.KILL, 2);
-        registerRankCommand("killsiralama3", LeaderboardCategory.KILL, 3);
-
-        registerRankCommand("zamansiralama1", LeaderboardCategory.TIME, 1);
-        registerRankCommand("zamansiralama2", LeaderboardCategory.TIME, 2);
-        registerRankCommand("zamansiralama3", LeaderboardCategory.TIME, 3);
-
-        registerRankCommand("olumsiralama1", LeaderboardCategory.DEATH, 1);
-        registerRankCommand("olumsiralama2", LeaderboardCategory.DEATH, 2);
-        registerRankCommand("olumsiralama3", LeaderboardCategory.DEATH, 3);
-
-        registerRankCommand("klansiralama1", LeaderboardCategory.CLAN, 1);
-        registerRankCommand("klansiralama2", LeaderboardCategory.CLAN, 2);
-        registerRankCommand("klansiralama3", LeaderboardCategory.CLAN, 3);
-
-        registerTop3Command("killsiralamatop3", LeaderboardCategory.KILL);
-        registerTop3Command("zamansiralamatop3", LeaderboardCategory.TIME);
-        registerTop3Command("olumsiralamatop3", LeaderboardCategory.DEATH);
-        registerTop3Command("klansiralamatop3", LeaderboardCategory.CLAN);
-
-        HologramSetupCommand setupCommand = new HologramSetupCommand(this);
-        getCommand("siralama").setExecutor(setupCommand);
-        getCommand("siralama").setTabCompleter(new SetupTabCompleter());
+    /** (Re)starts the periodic refresh, e.g. after the update interval changed in config.yml. */
+    public void startUpdateTask() {
+        stopUpdateTask();
+        long interval = configManager.updateIntervalTicks();
+        this.updateTask = new HologramUpdateTask(this).runTaskTimerAsynchronously(this, 40L, interval);
     }
 
-    private void registerRankCommand(String name, LeaderboardCategory category, int rank) {
-        getCommand(name).setExecutor(new RankHologramCommand(this, category, rank));
-    }
-
-    private void registerTop3Command(String name, LeaderboardCategory category) {
-        getCommand(name).setExecutor(new Top3HologramCommand(this, category));
-    }
-
-    private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
-        getServer().getPluginManager().registerEvents(new NpcRemoveListener(this), this);
+    private void stopUpdateTask() {
+        if (updateTask != null) {
+            updateTask.cancel();
+            updateTask = null;
+        }
     }
 
     public ConfigManager configManager() {
@@ -139,11 +115,11 @@ public class RankingHologramsPlugin extends JavaPlugin {
         return clanIntegration;
     }
 
-    public HologramManager hologramManager() {
-        return hologramManager;
+    public LeaderboardManager leaderboardManager() {
+        return leaderboardManager;
     }
 
-    public NpcSelectionManager npcSelectionManager() {
-        return npcSelectionManager;
+    public HologramManager hologramManager() {
+        return hologramManager;
     }
 }

@@ -4,7 +4,6 @@ import com.silvera.rankingholograms.RankingHologramsPlugin;
 import com.silvera.rankingholograms.data.ClanStats;
 import com.silvera.rankingholograms.data.LeaderboardCategory;
 import com.silvera.rankingholograms.data.PlayerStats;
-import com.silvera.rankingholograms.data.RankBinding;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -15,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -83,13 +84,13 @@ public class DatabaseManager {
                 );
             """);
 
-            // One row per NPC that currently has a leaderboard hologram bound to it.
-            // npc_id is the Citizens NPC's stable integer id.
+            // Hologram satirlarindaki placeholder sablonlari (FancyHolograms).
             s.executeUpdate("""
-                CREATE TABLE IF NOT EXISTS rank_bindings (
-                    npc_id INTEGER PRIMARY KEY,
-                    category TEXT NOT NULL,
-                    rank INTEGER NOT NULL
+                CREATE TABLE IF NOT EXISTS hologram_templates (
+                    holo TEXT NOT NULL,
+                    line INTEGER NOT NULL,
+                    template TEXT NOT NULL,
+                    PRIMARY KEY (holo, line)
                 );
             """);
 
@@ -226,53 +227,47 @@ public class DatabaseManager {
         return list;
     }
 
-    // ---------- rank bindings (NPC <-> leaderboard rank) ----------
+    // ---------- hologram line templates ----------
 
-    public void saveBinding(RankBinding binding) {
+    public void saveTemplate(String holo, int line, String template) {
         String sql = """
-            INSERT INTO rank_bindings (npc_id, category, rank)
-            VALUES (?, ?, ?)
-            ON CONFLICT(npc_id) DO UPDATE SET category = excluded.category, rank = excluded.rank
+            INSERT INTO hologram_templates (holo, line, template) VALUES (?, ?, ?)
+            ON CONFLICT(holo, line) DO UPDATE SET template = excluded.template
         """;
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, binding.getNpcId());
-            ps.setString(2, binding.getCategory().name());
-            ps.setInt(3, binding.getRank());
+            ps.setString(1, holo);
+            ps.setInt(2, line);
+            ps.setString(3, template);
             ps.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Hologram baglantisi kaydedilemedi: " + e.getMessage(), e);
+            plugin.getLogger().log(Level.WARNING, "Hologram sablonu kaydedilemedi: " + e.getMessage(), e);
         }
     }
 
-    public void deleteBinding(int npcId) {
-        String sql = "DELETE FROM rank_bindings WHERE npc_id = ?";
+    public void deleteTemplate(String holo, int line) {
+        String sql = "DELETE FROM hologram_templates WHERE holo = ? AND line = ?";
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, npcId);
+            ps.setString(1, holo);
+            ps.setInt(2, line);
             ps.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Hologram baglantisi silinemedi: " + e.getMessage(), e);
+            plugin.getLogger().log(Level.WARNING, "Hologram sablonu silinemedi: " + e.getMessage(), e);
         }
     }
 
-    public List<RankBinding> loadBindings() {
-        List<RankBinding> list = new ArrayList<>();
-        String sql = "SELECT * FROM rank_bindings";
+    public Map<String, Map<Integer, String>> loadTemplates() {
+        Map<String, Map<Integer, String>> result = new HashMap<>();
+        String sql = "SELECT holo, line, template FROM hologram_templates";
         try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                try {
-                    int npcId = rs.getInt("npc_id");
-                    LeaderboardCategory category = LeaderboardCategory.valueOf(rs.getString("category"));
-                    int rank = rs.getInt("rank");
-                    list.add(new RankBinding(npcId, category, rank));
-                } catch (IllegalArgumentException ex) {
-                    plugin.getLogger().warning("Bozuk hologram baglantisi atlandi: " + ex.getMessage());
-                }
+                result.computeIfAbsent(rs.getString("holo"), k -> new HashMap<>())
+                        .put(rs.getInt("line"), rs.getString("template"));
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Hologram baglantilari yuklenemedi: " + e.getMessage(), e);
+            plugin.getLogger().log(Level.WARNING, "Hologram sablonlari yuklenemedi: " + e.getMessage(), e);
         }
-        return list;
+        return result;
     }
 
     // ---------- meta ----------

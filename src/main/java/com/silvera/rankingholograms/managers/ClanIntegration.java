@@ -60,6 +60,7 @@ public class ClanIntegration {
             stats.setClanName(name);
             stats.addKill();
             plugin.databaseManager().saveClan(stats);
+            plugin.leaderboardManager().refreshAndRender();
         });
     }
 }

@@ -15,6 +15,8 @@ public class PlayerStats {
     private long totalOnlineSeconds;
     private long lastLogin;
     private long lastLogout;
+    /** Not persisted: set once the player's session has ended so late flushes never double-count time. */
+    private volatile boolean closed;
 
     public PlayerStats(UUID uuid, String name) {
         this.uuid = uuid;
@@ -71,6 +73,14 @@ public class PlayerStats {
 
     public void setLastLogout(long lastLogout) {
         this.lastLogout = lastLogout;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
     public void addKill() {

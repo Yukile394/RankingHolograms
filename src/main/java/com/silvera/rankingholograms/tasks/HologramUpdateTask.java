@@ -3,6 +3,10 @@ package com.silvera.rankingholograms.tasks;
 import com.silvera.rankingholograms.RankingHologramsPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ * Runs asynchronously: rebuilds the top 10 snapshots from the database,
+ * then hands the repaint of all placeholder holograms to the main thread.
+ */
 public class HologramUpdateTask extends BukkitRunnable {
 
     private final RankingHologramsPlugin plugin;
@@ -13,8 +17,6 @@ public class HologramUpdateTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        // Leaderboard values are recomputed and repainted onto each bound
-        // NPC's HologramTrait; no entity churn happens here.
-        plugin.hologramManager().refreshAll();
+        plugin.leaderboardManager().refreshAndRender();
     }
 }
