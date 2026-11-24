@@ -1,12 +1,19 @@
 hologram:
   # Siralamalarin yenilenme ve hologram satirlarinin guncellenme araligi (saniye).
   update-interval: 5
+  # Hologram satirlarinin okunup yenilendigi aralik (tick, 20 tick = 1 saniye).
+  # Maden geri sayimi icin 10 birakin; sadece degisen satirlar oyunculara gonderilir.
+  live-interval-ticks: 10
   # Cevrimici oyuncularin sure verisinin veritabanina yazilma araligi (saniye).
   time-flush-seconds: 60
 
 database:
   type: sqlite
   file: data.db
+
+mines:
+  # %madenismi_sure% icin: sayac calismiyorsa gosterilir (ornegin sadece yuzde ile sifirlanan maden).
+  inactive-text: "-"
 
 placeholders:
   # Bos siralama pozisyonlarinda gosterilir. &-renk kodlari kullanilabilir.

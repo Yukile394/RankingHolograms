@@ -5,6 +5,7 @@ api-version: '1.21'
 description: FancyHolograms placeholder'lari ile Top 10 siralama hologramlari, SimpleClans entegrasyonlu.
 author: YukileX
 depend: [SimpleClans, FancyHolograms]
+softdepend: [PlaceholderAPI, CataMines]
 
 commands:
   siralama:

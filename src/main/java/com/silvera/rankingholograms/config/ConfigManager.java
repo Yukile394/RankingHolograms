@@ -24,6 +24,16 @@ public class ConfigManager {
         return Math.max(1, cfg.getInt("hologram.update-interval", 5)) * 20L;
     }
 
+    /** How often hologram lines are re-read and repainted (maden geri sayimi icin saniye alti hassasiyet). */
+    public long liveIntervalTicks() {
+        return Math.max(5, cfg.getInt("hologram.live-interval-ticks", 10));
+    }
+
+    /** Shown by %madenismi_sure% when the mine has no running timer (e.g. percentage-only mode). */
+    public String mineInactiveText() {
+        return LegacyColor.toMiniMessage(cfg.getString("mines.inactive-text", "-"));
+    }
+
     /** How often live session time of online players is written to the database. */
     public long timeFlushMillis() {
         return Math.max(5, cfg.getInt("hologram.time-flush-seconds", 60)) * 1000L;

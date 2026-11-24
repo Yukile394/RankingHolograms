@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 /**
@@ -153,9 +154,26 @@ public class FancyHologramsBridge {
         return has(target, name) ? call(target, name, args) : null;
     }
 
+    private static final java.util.Map<String, Method> METHOD_CACHE = new ConcurrentHashMap<>();
+
+    private static boolean accepts(Method m, Object[] args) {
+        Class<?>[] types = m.getParameterTypes();
+        for (int i = 0; i < types.length; i++) {
+            if (args[i] != null && !types[i].isInstance(args[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static Object call(Object target, String name, Object... args) throws Exception {
         Class<?> type = target instanceof Class<?> c ? c : target.getClass();
         boolean isStatic = target instanceof Class<?>;
+        String cacheKey = type.getName() + "#" + name + "#" + args.length;
+        Method cached = METHOD_CACHE.get(cacheKey);
+        if (cached != null && accepts(cached, args)) {
+            return cached.invoke(isStatic ? null : target, args);
+        }
         for (Method m : type.getMethods()) {
             if (!m.getName().equals(name) || m.getParameterCount() != args.length) {
                 continue;
@@ -172,6 +190,7 @@ public class FancyHologramsBridge {
                 continue;
             }
             m.setAccessible(true);
+            METHOD_CACHE.put(cacheKey, m);
             return m.invoke(isStatic ? null : target, args);
         }
         throw new NoSuchMethodException(type.getName() + "#" + name);
