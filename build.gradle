@@ -16,6 +16,7 @@ repositories {
     mavenCentral()
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
+    maven { url = 'https://repo.helpch.at/releases/' } // PlaceholderAPI
     maven { url = 'https://repo.roinujnosde.me/releases/' } // Actively maintained SimpleClans fork (RoinujNosde)
 }
 
@@ -26,6 +27,9 @@ dependencies {
     // Check https://repo.roinujnosde.me/releases/net/sacredlabyrinth/phaed/simpleclans/SimpleClans/
     // for the latest version number before building.
     compileOnly 'net.sacredlabyrinth.phaed.simpleclans:SimpleClans:2.19.2'
+
+    // PlaceholderAPI (soft dependency, kisisel %rh_...% placeholder'lari icin)
+    compileOnly 'me.clip:placeholderapi:2.11.6'
 
     // FancyHolograms is resolved at runtime (v2 and v3 API), no compile-time dependency needed.
 

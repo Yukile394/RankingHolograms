@@ -227,6 +227,37 @@ public class DatabaseManager {
         return list;
     }
 
+    /** Every player uuid ordered exactly like the top lists (used for personal ranks). */
+    public List<String> orderedPlayerIds(String column) {
+        String sql = "SELECT uuid FROM player_stats ORDER BY " + column + " DESC, name ASC";
+        List<String> list = new ArrayList<>();
+        try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(rs.getString("uuid"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Kisisel siralama sorgusu basarisiz: " + e.getMessage(), e);
+        }
+        return list;
+    }
+
+    public List<ClanStats> allClans() {
+        String sql = "SELECT * FROM clan_stats ORDER BY total_kills DESC, clan_name ASC";
+        List<ClanStats> list = new ArrayList<>();
+        try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ClanStats stats = new ClanStats(rs.getString("clan_id"), rs.getString("clan_name"));
+                stats.setTotalKills(rs.getLong("total_kills"));
+                list.add(stats);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Klan listesi alinamadi: " + e.getMessage(), e);
+        }
+        return list;
+    }
+
     // ---------- hologram line templates ----------
 
     public void saveTemplate(String holo, int line, String template) {

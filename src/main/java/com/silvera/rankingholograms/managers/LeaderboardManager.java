@@ -6,6 +6,7 @@ import com.silvera.rankingholograms.data.LeaderboardCategory;
 import com.silvera.rankingholograms.data.PlayerStats;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +27,11 @@ public class LeaderboardManager {
     private final Map<LeaderboardCategory, List<Entry>> cache = new ConcurrentHashMap<>();
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
     private volatile long lastTimeFlush = System.currentTimeMillis();
+
+    // personal placeholders (%rh_...%): rank of every player / clan, key = uuid or clan id
+    private volatile boolean personalEnabled;
+    private volatile Map<LeaderboardCategory, Map<String, Integer>> personalRanks = Map.of();
+    private volatile Map<String, Long> clanKills = Map.of();
 
     public LeaderboardManager(RankingHologramsPlugin plugin) {
         this.plugin = plugin;
@@ -58,9 +64,51 @@ public class LeaderboardManager {
             for (LeaderboardCategory category : LeaderboardCategory.values()) {
                 cache.put(category, load(category));
             }
+            if (personalEnabled) {
+                loadPersonal();
+            }
         } finally {
             refreshing.set(false);
         }
+    }
+
+    public void enablePersonal() {
+        this.personalEnabled = true;
+    }
+
+    /** 1-based global rank of a player (uuid) or clan (clan id), or null when unknown. */
+    public Integer rankOf(LeaderboardCategory category, String key) {
+        Map<String, Integer> ranks = personalRanks.get(category);
+        return ranks == null || key == null ? null : ranks.get(key);
+    }
+
+    public Long clanKillsOf(String clanId) {
+        return clanId == null ? null : clanKills.get(clanId);
+    }
+
+    private void loadPersonal() {
+        Map<LeaderboardCategory, Map<String, Integer>> ranks = new java.util.EnumMap<>(LeaderboardCategory.class);
+        for (LeaderboardCategory category : LeaderboardCategory.values()) {
+            if (category == LeaderboardCategory.CLAN) {
+                continue;
+            }
+            Map<String, Integer> map = new HashMap<>();
+            int position = 1;
+            for (String id : plugin.databaseManager().orderedPlayerIds(column(category))) {
+                map.put(id, position++);
+            }
+            ranks.put(category, map);
+        }
+        Map<String, Integer> clanRanks = new HashMap<>();
+        Map<String, Long> kills = new HashMap<>();
+        int position = 1;
+        for (ClanStats clan : plugin.databaseManager().allClans()) {
+            clanRanks.put(clan.getClanId(), position++);
+            kills.put(clan.getClanId(), clan.getTotalKills());
+        }
+        ranks.put(LeaderboardCategory.CLAN, clanRanks);
+        this.personalRanks = ranks;
+        this.clanKills = kills;
     }
 
     /** Async-safe: rebuilds the snapshot, then repaints holograms on the main thread. */
