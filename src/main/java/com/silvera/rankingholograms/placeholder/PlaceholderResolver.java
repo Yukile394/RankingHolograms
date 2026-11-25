@@ -28,8 +28,9 @@ public class PlaceholderResolver {
 
     private static final Pattern RANK =
             Pattern.compile("%(killed|zaman|olum|klan)(\\d{1,2})(_deger)?%", Pattern.CASE_INSENSITIVE);
+    // Any mine name (Turkish letters, digits, "-", "+", ...) followed by _sure (or _süre).
     private static final Pattern MINE =
-            Pattern.compile("%([A-Za-z0-9_\\-]+)_sure%", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("%([^%\\s]+)_(?:sure|s\u00fcre)%", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
     private record Span(int start, int end, String text, LeaderboardCategory category,
